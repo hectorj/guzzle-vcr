@@ -1,0 +1,27 @@
+{
+    "name": "hectorj/guzzle-vcr",
+    "description": "Guzzle VCR",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "hectorj",
+            "email": "hector.jusforgues@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "guzzlehttp/guzzle": "^6.3",
+        "corneltek/codegen": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.3",
+        "phpstan/phpstan": "^0.8.5"
+    },
+    "autoload": {
+        "psr-4": {"GuzzleVCR\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"Tests\\": "tests/"}
+    }
+}
