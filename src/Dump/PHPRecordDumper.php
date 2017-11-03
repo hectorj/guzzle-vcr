@@ -87,7 +87,7 @@ class PHPRecordDumper implements RecordDumper
             "'{$record->getRequest()->getRequest()->getMethod()}',",
             "'{$record->getRequest()->getRequest()->getUri()}',",
             "{$headersString},",
-            "'{$record->getRequest()->getRequest()->getBody()->getContents()}',",
+            "'{$this->escape($record->getRequest()->getRequest()->getBody()->getContents())}',",
             "'{$record->getRequest()->getRequest()->getProtocolVersion()}'",
         ], -1);
         $this->addLines([
@@ -124,9 +124,9 @@ class PHPRecordDumper implements RecordDumper
             $this->addLines([
                 "{$response->getStatusCode()},",
                 "{$headersString},",
-                "'{$response->getBody()->getContents()}',",
+                "'{$this->escape($response->getBody()->getContents())}',",
                 "'{$response->getProtocolVersion()}',",
-                "'{$response->getReasonPhrase()}'",
+                "'{$this->escape($response->getReasonPhrase())}'",
             ], -1);
             $this->addLines([
                 ")",
@@ -183,6 +183,10 @@ class PHPRecordDumper implements RecordDumper
 
         \assert($this->indentationLevel === 0);
 
+        $dirname = dirname($this->filepath);
+        if (!file_exists($dirname)) {
+			mkdir($dirname, 0777, true);
+		}
         file_put_contents($this->filepath, implode("\n", $this->lines));
     }
 
@@ -193,6 +197,11 @@ class PHPRecordDumper implements RecordDumper
     public static function loadDump(string $filePath): iterable
 	{
 		return require($filePath);
+	}
+
+	private function escape(string $str): string
+	{
+		return str_replace("'", "\\'", $str);
 	}
 
     private function addLines(array $lines, int $indentationChange = 0): void
