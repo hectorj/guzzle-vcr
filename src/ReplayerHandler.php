@@ -19,6 +19,7 @@ final class ReplayerHandler implements GuzzleHandler
 	 * @param iterable|Record[] $records
 	 * @param BeforeReplayHook|BeforeReplayHook[] ...$beforeReplayHooks
 	 * @throws \Error
+	 * @api
 	 */
     public function __construct(iterable $records, BeforeReplayHook ...$beforeReplayHooks)
     {

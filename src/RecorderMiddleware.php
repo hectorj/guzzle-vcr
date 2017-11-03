@@ -13,6 +13,7 @@ final class RecorderMiddleware implements GuzzleMiddleware
     /**
      * RecorderMiddleware constructor.
      * @param RecordDumper $recordDumper
+	 * @api
      */
     public function __construct(RecordDumper $recordDumper)
     {
