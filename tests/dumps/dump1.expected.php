@@ -1,6 +1,6 @@
 <?php
 
-$fn = function(): \Generator {
+$fn = function () : \Generator {
 	$yields = [];
 	$promises = [];
 

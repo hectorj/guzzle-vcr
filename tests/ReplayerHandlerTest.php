@@ -25,152 +25,152 @@ use PHPUnit\Framework\TestCase;
 
 class ReplayerHandlerTest extends TestCase
 {
-    public function test_replay_without_records(): void
-    {
-        $records = [];
-        $handler = new ReplayerHandler($records);
-        $stack = new HandlerStack($handler);
+	public function test_replay_without_records(): void
+	{
+		$records = [];
+		$handler = new ReplayerHandler($records);
+		$stack = new HandlerStack($handler);
 
-        $client = new GuzzleClient([
-            'handler' => $stack
-        ]);
-        $this->expectException(MissingRecordError::class);
-        $client->get('http://example.com/');
-    }
+		$client = new GuzzleClient([
+			'handler' => $stack
+		]);
+		$this->expectException(MissingRecordError::class);
+		$client->get('http://example.com/');
+	}
 
-    public function test_replay_nonmatching_record(): void
-    {
-        $records = [
-            new Record(
-                new GuzzleRequest(
-                    new Request('GET', 'http://example.com/'),
-                    []
-                ),
-                new FulfilledPromise(new Response(200, [], 'example body for testing purposes'))
-            ),
-        ];
-        $handler = new ReplayerHandler($records, new FullRequestMatcher());
-        $stack = new HandlerStack($handler);
+	public function test_replay_nonmatching_record(): void
+	{
+		$records = [
+			new Record(
+				new GuzzleRequest(
+					new Request('GET', 'http://example.com/'),
+					[]
+				),
+				new FulfilledPromise(new Response(200, [], 'example body for testing purposes'))
+			),
+		];
+		$handler = new ReplayerHandler($records, new FullRequestMatcher());
+		$stack = new HandlerStack($handler);
 
-        $client = new GuzzleClient([
-            'handler' => $stack
-        ]);
+		$client = new GuzzleClient([
+			'handler' => $stack
+		]);
 
-        $this->expectException(ExpectationFailedException::class);
+		$this->expectException(ExpectationFailedException::class);
 		$this->expectExceptionMessage("request's URI should match records, or records should be regenerated");
-        $client->get('http://example.com/some-page');
-    }
+		$client->get('http://example.com/some-page');
+	}
 
-    public function test_replay_matching_record_with_response(): void
-    {
-        $expectedResponse = new Response(200, [], 'example body for testing purposes');
-        $records = [
-            new Record(
-                new GuzzleRequest(
-                    new Request('GET', 'http://example.com/'),
-                    []
-                ),
-                new FulfilledPromise($expectedResponse)
-            ),
-        ];
-        $handler = new ReplayerHandler($records);
-        $stack = new HandlerStack($handler);
+	public function test_replay_matching_record_with_response(): void
+	{
+		$expectedResponse = new Response(200, [], 'example body for testing purposes');
+		$records = [
+			new Record(
+				new GuzzleRequest(
+					new Request('GET', 'http://example.com/'),
+					[]
+				),
+				new FulfilledPromise($expectedResponse)
+			),
+		];
+		$handler = new ReplayerHandler($records);
+		$stack = new HandlerStack($handler);
 
-        $client = new GuzzleClient([
-            'handler' => $stack
-        ]);
+		$client = new GuzzleClient([
+			'handler' => $stack
+		]);
 
-        $actualResponse = $client->get('http://example.com/');
-        self::assertSame($expectedResponse, $actualResponse);
-    }
+		$actualResponse = $client->get('http://example.com/');
+		self::assertSame($expectedResponse, $actualResponse);
+	}
 
-    public function test_replay_matching_record_with_error(): void
-    {
-        $expectedException = new \Exception('example error for testing purposes', 42);
-        $records = [
-            new Record(
-                new GuzzleRequest(
-                    new Request('GET', 'http://example.com/'),
-                    []
-                ),
-                new RejectedPromise($expectedException)
-            ),
-        ];
-        $handler = new ReplayerHandler($records);
-        $stack = new HandlerStack($handler);
+	public function test_replay_matching_record_with_error(): void
+	{
+		$expectedException = new \Exception('example error for testing purposes', 42);
+		$records = [
+			new Record(
+				new GuzzleRequest(
+					new Request('GET', 'http://example.com/'),
+					[]
+				),
+				new RejectedPromise($expectedException)
+			),
+		];
+		$handler = new ReplayerHandler($records);
+		$stack = new HandlerStack($handler);
 
-        $client = new GuzzleClient([
-            'handler' => $stack
-        ]);
-        $this->expectException(get_class($expectedException));
-        $this->expectExceptionMessage($expectedException->getMessage());
-        $this->expectExceptionCode($expectedException->getCode());
-        $client->get('http://example.com/');
-    }
+		$client = new GuzzleClient([
+			'handler' => $stack
+		]);
+		$this->expectException(get_class($expectedException));
+		$this->expectExceptionMessage($expectedException->getMessage());
+		$this->expectExceptionCode($expectedException->getCode());
+		$client->get('http://example.com/');
+	}
 
-    public function test_replay_matching_record_with_delayed_response(): void
-    {
-        $expectedResponse = new Response(200, [], 'example body for testing purposes');
-        $expectedPromise = new Promise();
-        $records = [
-            new Record(
-                new GuzzleRequest(
-                    new Request('GET', 'http://example.com/'),
-                    []
-                ),
-                $expectedPromise
-            ),
-        ];
-        $handler = new ReplayerHandler($records);
-        $stack = new HandlerStack($handler);
+	public function test_replay_matching_record_with_delayed_response(): void
+	{
+		$expectedResponse = new Response(200, [], 'example body for testing purposes');
+		$expectedPromise = new Promise();
+		$records = [
+			new Record(
+				new GuzzleRequest(
+					new Request('GET', 'http://example.com/'),
+					[]
+				),
+				$expectedPromise
+			),
+		];
+		$handler = new ReplayerHandler($records);
+		$stack = new HandlerStack($handler);
 
-        $client = new GuzzleClient([
-            'handler' => $stack
-        ]);
+		$client = new GuzzleClient([
+			'handler' => $stack
+		]);
 
-        $actualPromise = $client->getAsync('http://example.com/');
-        self::assertSame(PromiseInterface::PENDING, $actualPromise->getState());
+		$actualPromise = $client->getAsync('http://example.com/');
+		self::assertSame(PromiseInterface::PENDING, $actualPromise->getState());
 
-        $expectedPromise->resolve($expectedResponse);
-        self::assertSame(PromiseInterface::FULFILLED, $actualPromise->getState());
+		$expectedPromise->resolve($expectedResponse);
+		self::assertSame(PromiseInterface::FULFILLED, $actualPromise->getState());
 
-        $actualResponse = $actualPromise->wait(true);
-        self::assertSame($expectedResponse, $actualResponse);
-    }
+		$actualResponse = $actualPromise->wait(true);
+		self::assertSame($expectedResponse, $actualResponse);
+	}
 
-    public function test_replay_matching_record_with_delayed_error(): void
-    {
-        $expectedException = new \Exception('example error for testing purposes', 42);
-        $expectedPromise = new Promise();
-        $records = [
-            new Record(
-                new GuzzleRequest(
-                    new Request('GET', 'http://example.com/'),
-                    []
-                ),
-                $expectedPromise
-            ),
-        ];
-        $handler = new ReplayerHandler($records);
-        $stack = new HandlerStack($handler);
+	public function test_replay_matching_record_with_delayed_error(): void
+	{
+		$expectedException = new \Exception('example error for testing purposes', 42);
+		$expectedPromise = new Promise();
+		$records = [
+			new Record(
+				new GuzzleRequest(
+					new Request('GET', 'http://example.com/'),
+					[]
+				),
+				$expectedPromise
+			),
+		];
+		$handler = new ReplayerHandler($records);
+		$stack = new HandlerStack($handler);
 
-        $client = new GuzzleClient([
-            'handler' => $stack
-        ]);
+		$client = new GuzzleClient([
+			'handler' => $stack
+		]);
 
-        $actualPromise = $client->getAsync('http://example.com/');
-        self::assertSame(PromiseInterface::PENDING, $actualPromise->getState());
+		$actualPromise = $client->getAsync('http://example.com/');
+		self::assertSame(PromiseInterface::PENDING, $actualPromise->getState());
 
-        $expectedPromise->reject($expectedException);
-        self::assertSame(PromiseInterface::REJECTED, $actualPromise->getState());
+		$expectedPromise->reject($expectedException);
+		self::assertSame(PromiseInterface::REJECTED, $actualPromise->getState());
 
-        $this->expectException(get_class($expectedException));
-        $this->expectExceptionMessage($expectedException->getMessage());
-        $this->expectExceptionCode($expectedException->getCode());
-        $actualPromise->wait(true);
-    }
+		$this->expectException(get_class($expectedException));
+		$this->expectExceptionMessage($expectedException->getMessage());
+		$this->expectExceptionCode($expectedException->getCode());
+		$actualPromise->wait(true);
+	}
 
-    public function test_replay_dump1(): void
+	public function test_replay_dump1(): void
 	{
 		$records = PHPRecordDumper::loadDump(__DIR__.'/dumps/dump1.expected.php');
 		$normalizers = new StandardNormalizers();

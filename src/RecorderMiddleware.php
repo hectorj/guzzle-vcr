@@ -7,25 +7,25 @@ use GuzzleVCR\Dump\RecordDumper;
 
 final class RecorderMiddleware implements GuzzleMiddleware
 {
-    /** @var RecordDumper */
-    private $recordDumper;
+	/** @var RecordDumper */
+	private $recordDumper;
 
-    /**
-     * RecorderMiddleware constructor.
-     * @param RecordDumper $recordDumper
+	/**
+	 * RecorderMiddleware constructor.
+	 * @param RecordDumper $recordDumper
 	 * @api
-     */
-    public function __construct(RecordDumper $recordDumper)
-    {
-        $this->recordDumper = $recordDumper;
-    }
+	 */
+	public function __construct(RecordDumper $recordDumper)
+	{
+		$this->recordDumper = $recordDumper;
+	}
 
 
-    /**
-     * @inheritdoc
-     */
-    public function __invoke(callable $nextHandler): GuzzleHandler
-    {
-        return new RecorderHandler($nextHandler, $this->recordDumper);
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function __invoke(callable $nextHandler): GuzzleHandler
+	{
+		return new RecorderHandler($nextHandler, $this->recordDumper);
+	}
 }

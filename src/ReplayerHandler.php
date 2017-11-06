@@ -8,11 +8,11 @@ use Psr\Http\Message\RequestInterface;
 
 final class ReplayerHandler implements GuzzleHandler
 {
-    /** @var \Iterator|Record[] */
-    private $records;
+	/** @var \Iterator|Record[] */
+	private $records;
 
-    /** @var BeforeReplayHook[] */
-    private $beforeReplayHooks = [];
+	/** @var BeforeReplayHook[] */
+	private $beforeReplayHooks = [];
 
 	/**
 	 * ReplayerHandler constructor.
@@ -21,9 +21,9 @@ final class ReplayerHandler implements GuzzleHandler
 	 * @throws \Error
 	 * @api
 	 */
-    public function __construct(iterable $records, BeforeReplayHook ...$beforeReplayHooks)
-    {
-    	if (!$records instanceof \Iterator) {
+	public function __construct(iterable $records, BeforeReplayHook ...$beforeReplayHooks)
+	{
+		if (!$records instanceof \Iterator) {
 			if (is_array($records)) {
 				$records = new \ArrayIterator($records);
 			} elseif ($records instanceof \Traversable) {
@@ -33,17 +33,17 @@ final class ReplayerHandler implements GuzzleHandler
 			}
 		}
 
-        $this->records = $records;
-        $this->records->rewind();
+		$this->records = $records;
+		$this->records->rewind();
 
-        $this->beforeReplayHooks = $beforeReplayHooks;
-    }
+		$this->beforeReplayHooks = $beforeReplayHooks;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function __invoke(RequestInterface $request, array $options): PromiseInterface
-    {
+	/**
+	 * @inheritdoc
+	 */
+	public function __invoke(RequestInterface $request, array $options): PromiseInterface
+	{
 		if (!$this->records->valid()) {
 			throw new MissingRecordError();
 		}
@@ -51,10 +51,10 @@ final class ReplayerHandler implements GuzzleHandler
 		$this->records->next();
 
 		$actualGuzzleRequest = new GuzzleRequest($request, $options);
-		foreach($this->beforeReplayHooks as $hook) {
+		foreach ($this->beforeReplayHooks as $hook) {
 			$hook($record, $actualGuzzleRequest);
 		}
 
-        return $record->getPromise();
-    }
+		return $record->getPromise();
+	}
 }

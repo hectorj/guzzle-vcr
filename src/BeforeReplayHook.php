@@ -9,5 +9,5 @@ interface BeforeReplayHook
 	 * @param Record $record
 	 * @param GuzzleRequest $actualRequest
 	 */
-    public function __invoke(Record $record, GuzzleRequest $actualRequest): void;
+	public function __invoke(Record $record, GuzzleRequest $actualRequest): void;
 }
