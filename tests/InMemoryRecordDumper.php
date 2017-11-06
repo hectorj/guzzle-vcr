@@ -9,23 +9,23 @@ use GuzzleVCR\Record;
 
 class InMemoryRecordDumper implements RecordDumper
 {
-    /** @var Record[] */
-    private $records = [];
-    /**
-     * @inheritdoc
-     */
-    public function __invoke(Record $record): PromiseInterface
-    {
-        $this->records[] = $record;
+	/** @var Record[] */
+	private $records = [];
+	/**
+	 * @inheritdoc
+	 */
+	public function __invoke(Record $record): PromiseInterface
+	{
+		$this->records[] = $record;
 
-        return $record->getPromise();
-    }
+		return $record->getPromise();
+	}
 
-    /**
-     * @return Record[]
-     */
-    public function getRecords(): array
-    {
-        return $this->records;
-    }
+	/**
+	 * @return Record[]
+	 */
+	public function getRecords(): array
+	{
+		return $this->records;
+	}
 }

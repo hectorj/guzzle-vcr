@@ -23,7 +23,6 @@ class RequestMatchersTest extends TestCase
 		$this->expectException(ExpectationFailedException::class);
 		$this->expectExceptionMessage($expectedExceptionMessage);
 		$matcher($record, $request);
-
 	}
 
 	public static function nonMatchingProvider(): array
